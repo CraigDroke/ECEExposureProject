@@ -1,35 +1,35 @@
 // The code below is for the UV sensor brick.
 
 //install the below libraries
-#include <Wire.h>
-#include <Adafruit_SSD1306.h>
-#include <Adafruit_GFX.h>
 #include <Adafruit_SI1145.h>
+#include <Arduino.h>
+#include <U8g2lib.h>
 
 //This defines the dimensions of the display
-#define OLED_WIDTH 128
-#define OLED_HEIGHT 32
-#define OLED_ADDR   0x3C
+#ifdef UXU8_HAVE_HW_SPI
+#include <SPI.h>
+#endif
+#ifdef UXU8_HAVE_HW_I2C
+#include <Wire.h>
+#endif
+
 //may need to define pins for sensor????
 
-Adafruit_SSD1306 display(OLED_WIDTH, OLED_HEIGHT);
+U8G2_SSD1306_128X64_ALT0_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE);
 Adafruit_SI1145 uv = Adafruit_SI1145();
 
 //This sets up the display and prints headings. It also starts the sensor.
 void setup() {
-  display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR);
-  display.clearDisplay();
+ u8g2.begin();
+  u8g2.clearBuffer();
+                 
+  u8g2.setFont(u8g2_font_ncenB08_tr);   //may need to change the locations these messages are being printed.
+  u8g2.drawStr(0,10,"Todays Conditions");
+             
+  u8g2.setFont(u8g2_font_ncenB08_tr);
+  u8g2.drawStr(0,10,"UV reading:");
 
-  display.setTextSize(.5);
-  display.setTextColor(WHITE);
-  display.setCursor(0, 0);
-  display.println("Today's Conditions");
-
-  display.setTextSize(.5);
-  display.setTextColor(WHITE);
-  display.println("UV Reading:");
-
-  display.display();
+  u8g2.begin();
 
   uv.begin();
 }
@@ -37,10 +37,11 @@ void setup() {
 //This takes measurements and prints to the display. This should occur every 5 mins.
 void loop() {
 
-  float uv = dht.readUV();
+  float uvv= uv.readUV();
   
-  display.println(uv + "nm");
+  u8g2.setFont(u8g2_font_ncenB08_tr);
+  u8g2.drawStr(0,10,uvv);
+  u8g2.drawStr(0,10,"nM");
+  u8g2.sendBuffer();
 
   delay(10);
-  display.clearDisplay();
-}
