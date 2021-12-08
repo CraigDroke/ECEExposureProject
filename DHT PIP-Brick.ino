@@ -18,18 +18,16 @@ DHT dht(DHTPIN, DHTTYPE);
 
 //This sets up the display and prints headings. It also starts the sensor.
 void setup() {
+  delay(5000);
   display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR);
   display.clearDisplay();
 
-  display.setTextSize(.5);
-  display.setTextColor(WHITE);
   display.setCursor(0, 0);
-  display.println("Today's Conditions");
-
   display.setTextSize(.5);
   display.setTextColor(WHITE);
   display.println("Temp and Humidity:");
 
+  display.display();
 
   dht.begin();
 }
